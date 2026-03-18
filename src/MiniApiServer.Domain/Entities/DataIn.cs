@@ -5,6 +5,11 @@ namespace MiniApiServer.Domain.Entities;
 
 public sealed class DataIn
 {
+    private DataIn()
+    {
+        Description = string.Empty;
+    }
+
     private DataIn(Guid id, string description, int dataA, int dataB, OperationStatus status)
     {
         Id = id;
@@ -14,7 +19,7 @@ public sealed class DataIn
         Status = status;
     }
 
-    public Guid Id { get; }
+    public Guid Id { get; private set; }
 
     public string Description { get; private set; }
 

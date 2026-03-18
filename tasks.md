@@ -8,7 +8,7 @@ Realizzare una soluzione dimostrativa per sperimentare Hangfire con PostgreSQL, 
 
 - Mantengo `.NET 8` come target framework, coerente con il progetto attuale.
 - Propongo di rinominare la soluzione logica in modo più esplicito, mantenendo però il repository corrente.
-- Userò `PostgreSQL` sia per i dati applicativi sia per lo storage di Hangfire.
+- Userò un database `PostgreSQL` per i dati applicativi e un database `PostgreSQL` separato per lo storage di Hangfire.
 - Considero `data_a`, `data_b` e `result` come numeri interi, salvo diversa indicazione.
 - Il campo `date` di `stats` rappresenterà il giorno di competenza del riepilogo.
 
@@ -99,6 +99,9 @@ tests/
 ### Attività
 
 - Configurare `DbContext` EF Core per PostgreSQL.
+- Configurare due connection string distinte:
+  - una per il database applicativo;
+  - una per il database dedicato a Hangfire.
 - Mappare le tabelle richieste mantenendo i nomi esatti:
   - `data_in`
   - `data_summs`
@@ -107,7 +110,7 @@ tests/
 - Configurare la persistenza dell'enum `OperationStatus`.
 - Implementare i repository concreti.
 - Aggiungere migration iniziale.
-- Configurare Hangfire con storage PostgreSQL.
+- Configurare Hangfire con storage PostgreSQL sul database dedicato.
 - Implementare i job wrapper Hangfire che delegano ai use case applicativi.
 - Configurare il recurring job giornaliero per le statistiche.
 
@@ -171,6 +174,7 @@ tests/
 ### Attività
 
 - Introdurre configurazione connection string PostgreSQL per API e Worker.
+- Distinguere esplicitamente la connection string del database applicativo da quella del database Hangfire.
 - Preparare `appsettings` distinti per i due host.
 - Documentare i passaggi minimi per:
   - avviare PostgreSQL;
@@ -198,6 +202,7 @@ tests/
 ## Dettagli implementativi che intendo seguire
 
 - Userò interfacce applicative per isolare Hangfire dal core applicativo.
+- Userò connection string separate per isolare i dati di dominio dalle tabelle tecniche di Hangfire.
 - I job Hangfire conterranno solo orchestrazione tecnica e delega ai use case.
 - Lo stato di `data_in` verrà aggiornato in modo esplicito durante l'esecuzione dei job, evitando logica implicita nei controller.
 - Il job giornaliero leggerà i risultati prodotti nella giornata e scriverà un record di riepilogo in `stats`.
@@ -209,6 +214,7 @@ tests/
 - Se `total_of_sums` e `total_of_subtractions` debbano essere somme aritmetiche dei risultati o conteggi delle operazioni concluse.
 - Se serva aggiungere una chiave primaria esplicita a tutte le tabelle, anche se nelle specifiche non è stata elencata.
 - Se il riepilogo giornaliero debba usare il fuso orario locale o UTC per determinare il perimetro della giornata.
+- Se il database Hangfire debba stare sullo stesso server PostgreSQL del database applicativo o su un server separato.
 
 ## Output atteso a fine implementazione
 

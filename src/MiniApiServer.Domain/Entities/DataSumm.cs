@@ -4,6 +4,11 @@ namespace MiniApiServer.Domain.Entities;
 
 public sealed class DataSumm
 {
+    private DataSumm()
+    {
+        Description = string.Empty;
+    }
+
     private DataSumm(Guid id, Guid dataInId, string description, int result)
     {
         Id = id;
@@ -12,13 +17,13 @@ public sealed class DataSumm
         Result = result;
     }
 
-    public Guid Id { get; }
+    public Guid Id { get; private set; }
 
-    public Guid DataInId { get; }
+    public Guid DataInId { get; private set; }
 
-    public string Description { get; }
+    public string Description { get; private set; }
 
-    public int Result { get; }
+    public int Result { get; private set; }
 
     public static DataSumm Create(Guid dataInId, string description, int result)
     {
