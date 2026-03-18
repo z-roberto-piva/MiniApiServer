@@ -4,6 +4,11 @@ namespace MiniApiServer.Domain.Entities;
 
 public sealed class DataSubtraction
 {
+    private DataSubtraction()
+    {
+        Description = string.Empty;
+    }
+
     private DataSubtraction(Guid id, Guid dataInId, string description, int result)
     {
         Id = id;
@@ -12,13 +17,13 @@ public sealed class DataSubtraction
         Result = result;
     }
 
-    public Guid Id { get; }
+    public Guid Id { get; private set; }
 
-    public Guid DataInId { get; }
+    public Guid DataInId { get; private set; }
 
-    public string Description { get; }
+    public string Description { get; private set; }
 
-    public int Result { get; }
+    public int Result { get; private set; }
 
     public static DataSubtraction Create(Guid dataInId, string description, int result)
     {

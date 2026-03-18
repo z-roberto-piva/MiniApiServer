@@ -4,6 +4,10 @@ namespace MiniApiServer.Domain.Entities;
 
 public sealed class Stat
 {
+    private Stat()
+    {
+    }
+
     private Stat(Guid id, DateTime date, int numberOfOperations, int totalOfSums, int totalOfSubtractions)
     {
         Id = id;
@@ -13,15 +17,15 @@ public sealed class Stat
         TotalOfSubtractions = totalOfSubtractions;
     }
 
-    public Guid Id { get; }
+    public Guid Id { get; private set; }
 
-    public DateTime Date { get; }
+    public DateTime Date { get; private set; }
 
-    public int NumberOfOperations { get; }
+    public int NumberOfOperations { get; private set; }
 
-    public int TotalOfSums { get; }
+    public int TotalOfSums { get; private set; }
 
-    public int TotalOfSubtractions { get; }
+    public int TotalOfSubtractions { get; private set; }
 
     public static Stat Create(DateTime date, int numberOfOperations, int totalOfSums, int totalOfSubtractions)
     {
