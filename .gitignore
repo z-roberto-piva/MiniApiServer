@@ -1,0 +1,47 @@
+# Build output
+bin/
+obj/
+out/
+
+# User-specific files
+*.user
+*.rsuser
+*.suo
+*.userosscache
+*.sln.docstates
+
+# IDE folders
+.vs/
+.vscode/
+.idea/
+
+# Logs
+*.log
+logs/
+
+# Test and coverage output
+TestResults/
+coverage/
+coverage-results/
+*.coverage
+*.coveragexml
+
+# NuGet
+packages/
+*.nupkg
+*.snupkg
+
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+secrets.json
+
+# OS-generated files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Local tooling caches
+.templateengine/
+.dotnet/
