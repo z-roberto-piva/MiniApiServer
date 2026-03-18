@@ -1,0 +1,10 @@
+<Solution>
+  <Project Path="src/MiniApiServer.Domain/MiniApiServer.Domain.csproj" />
+  <Project Path="src/MiniApiServer.Application/MiniApiServer.Application.csproj" />
+  <Project Path="src/MiniApiServer.Infrastructure/MiniApiServer.Infrastructure.csproj" />
+  <Project Path="src/MiniApiServer.Api/MiniApiServer.Api.csproj" />
+  <Project Path="src/MiniApiServer.Worker/MiniApiServer.Worker.csproj" />
+  <Project Path="tests/MiniApiServer.Domain.Tests/MiniApiServer.Domain.Tests.csproj" />
+  <Project Path="tests/MiniApiServer.Application.Tests/MiniApiServer.Application.Tests.csproj" />
+  <Project Path="tests/MiniApiServer.Infrastructure.Tests/MiniApiServer.Infrastructure.Tests.csproj" />
+</Solution>
