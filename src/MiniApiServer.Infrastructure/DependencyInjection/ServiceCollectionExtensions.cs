@@ -29,7 +29,9 @@ public static class ServiceCollectionExtensions
         var hangfireConnectionString = configuration.GetConnectionString("HangfirePostgres")
             ?? throw new InvalidOperationException("Connection string 'HangfirePostgres' is not configured.");
 
-        services.AddDbContext<MiniApiServerDbContext>(options => options.UseNpgsql(appConnectionString));
+        services.AddDbContext<MiniApiServerDbContext>(options => options.UseNpgsql(
+            appConnectionString,
+            npgsqlOptions => npgsqlOptions.MigrationsHistoryTable("__EFMigrationsHistory", MiniApiServerDbContext.Schema)));
 
         services.AddHangfire(config => config
             .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)

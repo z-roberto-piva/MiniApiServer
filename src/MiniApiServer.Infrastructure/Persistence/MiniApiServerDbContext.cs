@@ -5,6 +5,8 @@ namespace MiniApiServer.Infrastructure.Persistence;
 
 public sealed class MiniApiServerDbContext(DbContextOptions<MiniApiServerDbContext> options) : DbContext(options)
 {
+    public const string Schema = "mini_api_server";
+
     public DbSet<DataIn> DataIns => Set<DataIn>();
 
     public DbSet<DataSumm> DataSumms => Set<DataSumm>();
@@ -15,6 +17,7 @@ public sealed class MiniApiServerDbContext(DbContextOptions<MiniApiServerDbConte
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.HasDefaultSchema(Schema);
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(MiniApiServerDbContext).Assembly);
         base.OnModelCreating(modelBuilder);
     }

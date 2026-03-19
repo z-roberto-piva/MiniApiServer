@@ -32,5 +32,8 @@ public sealed class DataSubtractionConfiguration : IEntityTypeConfiguration<Data
             .HasColumnName("created_at_utc")
             .HasDefaultValueSql("CURRENT_TIMESTAMP")
             .ValueGeneratedOnAdd();
+
+        builder.HasIndex(entity => entity.DataInId)
+            .IsUnique();
     }
 }
