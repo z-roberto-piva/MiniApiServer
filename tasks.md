@@ -166,7 +166,55 @@ tests/
 
 - Coordinatore di stato robusto rispetto a più worker Hangfire attivi in parallelo.
 
-## Fase 7: test
+## Fase 7: nuovi job di multiplication e division
+
+### Attività
+
+- Estendere il flusso di input per creare anche due nuovi job Hangfire:
+  - `multiplication`
+  - `division`
+- Introdurre i casi d'uso applicativi e i job wrapper dedicati alle due nuove operazioni.
+- Modellare e persistere i risultati delle due nuove operazioni in strutture dedicate, coerenti con l'architettura esistente.
+- Definire la regola di business della divisione:
+  - se non si verifica division by zero, eseguire la divisione;
+  - se si verifica division by zero, salvare come risultato `0`.
+- Aggiornare il coordinatore di stato per considerare correttamente anche i nuovi job nel completamento del record sorgente.
+
+### Deliverable
+
+- Due nuovi job Hangfire, `multiplication` e `division`, integrati nel flusso applicativo e persistiti correttamente.
+
+## Fase 7.5: introduzione di uno sleep random nei job
+
+### Attività
+
+- Introdurre un ritardo casuale controllato durante l'esecuzione dei job Hangfire di:
+  - `sum`
+  - `subtraction`
+  - `multiplication`
+  - `division`
+- Vincolare il ritardo casuale ai soli valori:
+  - `5`
+  - `10`
+  - `15`
+  - `20`
+  - `30`
+  - `40`
+  - `50`
+  - `60` secondi
+- Rendere il ritardo configurabile e facilmente attivabile o disattivabile per ambiente.
+- Usare il ritardo solo come strumento di test e osservabilità del flusso, evitando di legarlo alla logica di business.
+- Verificare che con tempi di completamento diversi lo stato di `data_in` transizioni correttamente tra:
+  - `TODO`
+  - `DOING`
+  - `DONE`
+- Valutare se aggiungere logging esplicito dell'inizio e della fine di ciascun job per rendere più leggibile la sequenza di esecuzione.
+
+### Deliverable
+
+- Possibilità di simulare latenze variabili nei job per testare in modo più realistico concorrenza e aggiornamento degli stati.
+
+## Fase 8: test
 
 ### Attività
 
@@ -186,7 +234,7 @@ tests/
 
 - Copertura minima coerente con la `Definition of Done` di `agents.md`.
 
-## Fase 8: configurazione ed esecuzione locale
+## Fase 9: configurazione ed esecuzione locale
 
 ### Attività
 
@@ -214,8 +262,10 @@ tests/
 6. Endpoint API.
 7. Worker dedicato.
 8. Rafforzamento del coordinatore di stato.
-9. Test unitari e di integrazione.
-10. Verifica end-to-end locale.
+9. Nuovi job di multiplication e division.
+10. Introduzione di uno sleep random controllato nei job.
+11. Test unitari e di integrazione.
+12. Verifica end-to-end locale.
 
 ## Dettagli implementativi che intendo seguire
 
@@ -224,6 +274,8 @@ tests/
 - I job Hangfire conterranno solo orchestrazione tecnica e delega ai use case.
 - Lo stato di `data_in` verrà aggiornato in modo esplicito durante l'esecuzione dei job, evitando logica implicita nei controller.
 - Il coordinatore di stato verrà irrobustito per reggere esecuzioni concorrenti di più worker.
+- L'aggiunta di nuovi job dovrà mantenere coerenza architetturale ed estendere il coordinamento dello stato senza duplicare logica.
+- L'introduzione dello sleep random dovrà restare confinata a un meccanismo tecnico configurabile, così da non contaminare la logica di business.
 - Il job giornaliero leggerà i risultati prodotti nella giornata e scriverà un record di riepilogo in `stats`.
 - I nomi tabellari richiesti verranno preservati anche se non idiomatici.
 
@@ -235,10 +287,11 @@ tests/
 - Se il riepilogo giornaliero debba usare il fuso orario locale o UTC per determinare il perimetro della giornata.
 - Se il database Hangfire debba stare sullo stesso server PostgreSQL del database applicativo o su un server separato.
 - Quale strategia di concorrenza sia preferibile per il coordinatore: lock su riga, unique constraint, retry applicativo o combinazione di queste.
+- Se i nuovi risultati di `multiplication` e `division` debbano avere tabelle dedicate analoghe a somma e sottrazione oppure una modellazione più generica.
 
 ## Output atteso a fine implementazione
 
 - Una Web API che inserisce dati in `data_in` e accoda due job Hangfire.
-- Un Worker separato che esegue somma e sottrazione e salva i risultati nelle tabelle dedicate.
+- Un Worker separato che esegue somma, sottrazione, multiplication e division e salva i risultati nelle tabelle dedicate.
 - Un job schedulato giornaliero che popola `stats`.
 - Test eseguiti con esito positivo.

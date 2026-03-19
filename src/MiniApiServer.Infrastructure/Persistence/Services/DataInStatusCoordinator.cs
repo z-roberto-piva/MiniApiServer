@@ -17,8 +17,10 @@ public sealed class DataInStatusCoordinator(MiniApiServerDbContext dbContext) : 
 
         var hasSumm = await dbContext.DataSumms.AnyAsync(entity => entity.DataInId == dataInId, cancellationToken);
         var hasSubtraction = await dbContext.DataSubtractions.AnyAsync(entity => entity.DataInId == dataInId, cancellationToken);
+        var hasMultiplication = await dbContext.DataMultiplications.AnyAsync(entity => entity.DataInId == dataInId, cancellationToken);
+        var hasDivision = await dbContext.DataDivisions.AnyAsync(entity => entity.DataInId == dataInId, cancellationToken);
 
-        if (hasSumm && hasSubtraction)
+        if (hasSumm && hasSubtraction && hasMultiplication && hasDivision)
         {
             if (dataIn.Status != OperationStatus.DONE)
             {
@@ -30,7 +32,7 @@ public sealed class DataInStatusCoordinator(MiniApiServerDbContext dbContext) : 
                 dataIn.MarkAsDone();
             }
         }
-        else if ((hasSumm || hasSubtraction) && dataIn.Status == OperationStatus.TODO)
+        else if ((hasSumm || hasSubtraction || hasMultiplication || hasDivision) && dataIn.Status == OperationStatus.TODO)
         {
             dataIn.MarkAsDoing();
         }

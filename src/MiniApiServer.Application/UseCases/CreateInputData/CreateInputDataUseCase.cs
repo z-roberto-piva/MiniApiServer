@@ -12,6 +12,8 @@ public sealed class CreateInputDataUseCase(IDataInRepository dataInRepository, I
         var dataIn = DataIn.Create(command.Description, command.DataA, command.DataB);
 
         await dataInRepository.AddAsync(dataIn, cancellationToken);
+        await backgroundJobScheduler.EnqueueProcessMultiplicationAsync(dataIn.Id, cancellationToken);
+        await backgroundJobScheduler.EnqueueProcessDivisionAsync(dataIn.Id, cancellationToken);
         await backgroundJobScheduler.EnqueueProcessSumAsync(dataIn.Id, cancellationToken);
         await backgroundJobScheduler.EnqueueProcessSubtractionAsync(dataIn.Id, cancellationToken);
 
