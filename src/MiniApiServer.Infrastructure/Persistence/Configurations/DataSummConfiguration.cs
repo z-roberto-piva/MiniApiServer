@@ -32,5 +32,8 @@ public sealed class DataSummConfiguration : IEntityTypeConfiguration<DataSumm>
             .HasColumnName("created_at_utc")
             .HasDefaultValueSql("CURRENT_TIMESTAMP")
             .ValueGeneratedOnAdd();
+
+        builder.HasIndex(entity => entity.DataInId)
+            .IsUnique();
     }
 }

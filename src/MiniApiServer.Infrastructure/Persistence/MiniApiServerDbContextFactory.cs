@@ -11,7 +11,9 @@ public sealed class MiniApiServerDbContextFactory : IDesignTimeDbContextFactory<
             ?? "Host=localhost;Port=5432;Database=mini_api_server;Username=mini_api_server;Password=sviluppo";
 
         var optionsBuilder = new DbContextOptionsBuilder<MiniApiServerDbContext>();
-        optionsBuilder.UseNpgsql(connectionString);
+        optionsBuilder.UseNpgsql(
+            connectionString,
+            npgsqlOptions => npgsqlOptions.MigrationsHistoryTable("__EFMigrationsHistory", MiniApiServerDbContext.Schema));
 
         return new MiniApiServerDbContext(optionsBuilder.Options);
     }

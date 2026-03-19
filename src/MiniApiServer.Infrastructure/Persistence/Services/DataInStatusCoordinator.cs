@@ -9,33 +9,43 @@ public sealed class DataInStatusCoordinator(MiniApiServerDbContext dbContext) : 
 {
     public async Task MarkOperationCompletedAsync(Guid dataInId, CancellationToken cancellationToken = default)
     {
-        var dataIn = await dbContext.DataIns.SingleAsync(entity => entity.Id == dataInId, cancellationToken);
+        await using var transaction = await dbContext.Database.BeginTransactionAsync(cancellationToken);
+
+        var dataIn = await dbContext.DataIns
+            .FromSqlInterpolated($"SELECT * FROM data_in WHERE id = {dataInId} FOR UPDATE")
+            .SingleAsync(cancellationToken);
+
         var hasSumm = await dbContext.DataSumms.AnyAsync(entity => entity.DataInId == dataInId, cancellationToken);
         var hasSubtraction = await dbContext.DataSubtractions.AnyAsync(entity => entity.DataInId == dataInId, cancellationToken);
 
-        if (dataIn.Status == OperationStatus.TODO)
+        if (hasSumm && hasSubtraction)
+        {
+            if (dataIn.Status != OperationStatus.DONE)
+            {
+                if (dataIn.Status == OperationStatus.TODO)
+                {
+                    dataIn.MarkAsDoing();
+                }
+
+                dataIn.MarkAsDone();
+            }
+        }
+        else if ((hasSumm || hasSubtraction) && dataIn.Status == OperationStatus.TODO)
         {
             dataIn.MarkAsDoing();
         }
 
-        if (hasSumm && hasSubtraction && dataIn.Status != OperationStatus.DONE)
-        {
-            dataIn.MarkAsDone();
-        }
-
         await dbContext.SaveChangesAsync(cancellationToken);
+        await transaction.CommitAsync(cancellationToken);
     }
 
     public async Task MarkProcessingStartedAsync(DataIn dataIn, CancellationToken cancellationToken = default)
     {
-        if (dataIn.Status == OperationStatus.DONE)
-        {
-            return;
-        }
+        var trackedDataIn = await dbContext.DataIns.SingleAsync(entity => entity.Id == dataIn.Id, cancellationToken);
 
-        if (dataIn.Status == OperationStatus.TODO)
+        if (trackedDataIn.Status == OperationStatus.TODO)
         {
-            dataIn.MarkAsDoing();
+            trackedDataIn.MarkAsDoing();
             await dbContext.SaveChangesAsync(cancellationToken);
         }
     }
