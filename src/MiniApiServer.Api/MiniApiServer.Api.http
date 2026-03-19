@@ -1,6 +1,13 @@
-@WebApplication1_HostAddress = http://localhost:5269
+@MiniApiServer_Api_HostAddress = http://localhost:5269
 
-GET {{WebApplication1_HostAddress}}/weatherforecast/
+POST {{MiniApiServer_Api_HostAddress}}/api/data-in
+Content-Type: application/json
 Accept: application/json
+
+{
+  "description": "first test input",
+  "dataA": 10,
+  "dataB": 4
+}
 
 ###
