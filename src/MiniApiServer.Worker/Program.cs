@@ -4,7 +4,11 @@ using MiniApiServer.Infrastructure.DependencyInjection;
 using MiniApiServer.Worker;
 using Serilog;
 
-var builder = Host.CreateApplicationBuilder(args);
+var builder = Host.CreateApplicationBuilder(new HostApplicationBuilderSettings
+{
+    Args = args,
+    ContentRootPath = AppContext.BaseDirectory
+});
 
 builder.Services.AddSerilog((services, loggerConfiguration) => loggerConfiguration
     .ReadFrom.Configuration(builder.Configuration)
