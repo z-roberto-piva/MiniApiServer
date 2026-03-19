@@ -149,6 +149,23 @@ tests/
 
 - Applicazione worker separata che processa i job Hangfire.
 
+## Fase 6.5: rafforzamento del coordinatore di stato
+
+### Attività
+
+- Migliorare il coordinatore che aggiorna `data_in` per gestire correttamente concorrenza e retry.
+- Rendere l'aggiornamento dello stato idempotente rispetto all'esecuzione ripetuta dei job.
+- Evitare race condition tra job di somma e job di sottrazione eseguiti da worker diversi.
+- Valutare protezioni a livello database:
+  - lock espliciti;
+  - vincoli di unicità sui risultati;
+  - controlli ottimistici o pessimisti sulla riga sorgente.
+- Fare in modo che lo stato finale venga determinato in base ai risultati realmente persistiti.
+
+### Deliverable
+
+- Coordinatore di stato robusto rispetto a più worker Hangfire attivi in parallelo.
+
 ## Fase 7: test
 
 ### Attività
@@ -196,8 +213,9 @@ tests/
 5. Configurazione Hangfire.
 6. Endpoint API.
 7. Worker dedicato.
-8. Test unitari e di integrazione.
-9. Verifica end-to-end locale.
+8. Rafforzamento del coordinatore di stato.
+9. Test unitari e di integrazione.
+10. Verifica end-to-end locale.
 
 ## Dettagli implementativi che intendo seguire
 
@@ -205,6 +223,7 @@ tests/
 - Userò connection string separate per isolare i dati di dominio dalle tabelle tecniche di Hangfire.
 - I job Hangfire conterranno solo orchestrazione tecnica e delega ai use case.
 - Lo stato di `data_in` verrà aggiornato in modo esplicito durante l'esecuzione dei job, evitando logica implicita nei controller.
+- Il coordinatore di stato verrà irrobustito per reggere esecuzioni concorrenti di più worker.
 - Il job giornaliero leggerà i risultati prodotti nella giornata e scriverà un record di riepilogo in `stats`.
 - I nomi tabellari richiesti verranno preservati anche se non idiomatici.
 
@@ -215,6 +234,7 @@ tests/
 - Se serva aggiungere una chiave primaria esplicita a tutte le tabelle, anche se nelle specifiche non è stata elencata.
 - Se il riepilogo giornaliero debba usare il fuso orario locale o UTC per determinare il perimetro della giornata.
 - Se il database Hangfire debba stare sullo stesso server PostgreSQL del database applicativo o su un server separato.
+- Quale strategia di concorrenza sia preferibile per il coordinatore: lock su riga, unique constraint, retry applicativo o combinazione di queste.
 
 ## Output atteso a fine implementazione
 
