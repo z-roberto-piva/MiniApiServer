@@ -13,6 +13,10 @@ public sealed class MiniApiServerDbContext(DbContextOptions<MiniApiServerDbConte
 
     public DbSet<DataSubtraction> DataSubtractions => Set<DataSubtraction>();
 
+    public DbSet<DataMultiplication> DataMultiplications => Set<DataMultiplication>();
+
+    public DbSet<DataDivision> DataDivisions => Set<DataDivision>();
+
     public DbSet<Stat> Stats => Set<Stat>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

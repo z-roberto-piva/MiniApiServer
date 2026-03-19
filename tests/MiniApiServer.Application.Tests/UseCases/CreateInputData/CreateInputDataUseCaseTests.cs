@@ -10,7 +10,7 @@ namespace MiniApiServer.Application.Tests.UseCases.CreateInputData;
 public sealed class CreateInputDataUseCaseTests
 {
     [Fact]
-    public async Task ExecuteAsync_ShouldPersistInputAndEnqueueBothJobs()
+    public async Task ExecuteAsync_ShouldPersistInputAndEnqueueAllJobs()
     {
         var repository = new InMemoryDataInRepository();
         var scheduler = new RecordingBackgroundJobScheduler();
@@ -21,6 +21,8 @@ public sealed class CreateInputDataUseCaseTests
         Assert.NotEqual(Guid.Empty, result.DataInId);
         Assert.Equal(OperationStatus.TODO, result.Status);
         Assert.Single(repository.Items);
+        Assert.Equal(result.DataInId, scheduler.MultiplicationJobIds.Single());
+        Assert.Equal(result.DataInId, scheduler.DivisionJobIds.Single());
         Assert.Equal(result.DataInId, scheduler.SumJobIds.Single());
         Assert.Equal(result.DataInId, scheduler.SubtractionJobIds.Single());
     }
@@ -43,9 +45,25 @@ public sealed class CreateInputDataUseCaseTests
 
     private sealed class RecordingBackgroundJobScheduler : IBackgroundJobScheduler
     {
+        public List<Guid> DivisionJobIds { get; } = [];
+
+        public List<Guid> MultiplicationJobIds { get; } = [];
+
         public List<Guid> SumJobIds { get; } = [];
 
         public List<Guid> SubtractionJobIds { get; } = [];
+
+        public Task EnqueueProcessDivisionAsync(Guid dataInId, CancellationToken cancellationToken = default)
+        {
+            DivisionJobIds.Add(dataInId);
+            return Task.CompletedTask;
+        }
+
+        public Task EnqueueProcessMultiplicationAsync(Guid dataInId, CancellationToken cancellationToken = default)
+        {
+            MultiplicationJobIds.Add(dataInId);
+            return Task.CompletedTask;
+        }
 
         public Task EnqueueProcessSubtractionAsync(Guid dataInId, CancellationToken cancellationToken = default)
         {

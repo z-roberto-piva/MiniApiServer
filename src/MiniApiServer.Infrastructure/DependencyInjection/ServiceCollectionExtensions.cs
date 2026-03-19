@@ -8,6 +8,8 @@ using MiniApiServer.Application.Abstractions.Queries;
 using MiniApiServer.Application.Abstractions.Services;
 using MiniApiServer.Application.UseCases.CreateInputData;
 using MiniApiServer.Application.UseCases.GenerateDailyStats;
+using MiniApiServer.Application.UseCases.ProcessDivision;
+using MiniApiServer.Application.UseCases.ProcessMultiplication;
 using MiniApiServer.Application.UseCases.ProcessSubtraction;
 using MiniApiServer.Application.UseCases.ProcessSum;
 using MiniApiServer.Domain.Abstractions.Repositories;
@@ -40,6 +42,8 @@ public static class ServiceCollectionExtensions
             .UsePostgreSqlStorage(storage => storage.UseNpgsqlConnection(hangfireConnectionString)));
 
         services.AddScoped<IDataInRepository, DataInRepository>();
+        services.AddScoped<IDataDivisionRepository, DataDivisionRepository>();
+        services.AddScoped<IDataMultiplicationRepository, DataMultiplicationRepository>();
         services.AddScoped<IDataSummRepository, DataSummRepository>();
         services.AddScoped<IDataSubtractionRepository, DataSubtractionRepository>();
         services.AddScoped<IStatRepository, StatRepository>();
@@ -48,10 +52,14 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IBackgroundJobScheduler, HangfireBackgroundJobScheduler>();
 
         services.AddScoped<CreateInputDataUseCase>();
+        services.AddScoped<ProcessDivisionUseCase>();
+        services.AddScoped<ProcessMultiplicationUseCase>();
         services.AddScoped<ProcessSumUseCase>();
         services.AddScoped<ProcessSubtractionUseCase>();
         services.AddScoped<GenerateDailyStatsUseCase>();
 
+        services.AddScoped<ProcessDivisionJob>();
+        services.AddScoped<ProcessMultiplicationJob>();
         services.AddScoped<ProcessSumJob>();
         services.AddScoped<ProcessSubtractionJob>();
         services.AddScoped<GenerateDailyStatsRecurringJob>();
