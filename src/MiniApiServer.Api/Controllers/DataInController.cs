@@ -5,10 +5,16 @@ using MiniApiServer.Application.UseCases.CreateInputData;
 
 namespace MiniApiServer.Api.Controllers;
 
+/// <summary>
+/// Exposes the endpoint used to create new input rows for background processing.
+/// </summary>
 [ApiController]
 [Route("api/data-in")]
 public sealed class DataInController(CreateInputDataUseCase useCase) : ControllerBase
 {
+    /// <summary>
+    /// Creates a new input row and schedules the related background jobs.
+    /// </summary>
     [HttpPost]
     [ProducesResponseType(typeof(CreateDataInResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

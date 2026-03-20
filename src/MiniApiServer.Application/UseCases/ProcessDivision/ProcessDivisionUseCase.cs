@@ -6,11 +6,17 @@ using MiniApiServer.Domain.Entities;
 
 namespace MiniApiServer.Application.UseCases.ProcessDivision;
 
+/// <summary>
+/// Executes the division operation for a persisted input and stores the result.
+/// </summary>
 public sealed class ProcessDivisionUseCase(
     IDataInRepository dataInRepository,
     IDataDivisionRepository dataDivisionRepository,
     IDataInStatusCoordinator dataInStatusCoordinator)
 {
+    /// <summary>
+    /// Processes the input identified by the command and persists the division result.
+    /// </summary>
     public async Task<ProcessDivisionResult> ExecuteAsync(ProcessDivisionCommand command, CancellationToken cancellationToken = default)
     {
         var dataIn = await dataInRepository.GetByIdAsync(command.DataInId, cancellationToken);

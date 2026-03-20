@@ -7,6 +7,9 @@ using MiniApiServer.Infrastructure.Hangfire;
 
 namespace MiniApiServer.Worker;
 
+/// <summary>
+/// Registers recurring Hangfire jobs when the worker host starts.
+/// </summary>
 public sealed class WorkerBootstrapService(
     IRecurringJobManager recurringJobManager,
     IConfiguration configuration,
@@ -14,6 +17,9 @@ public sealed class WorkerBootstrapService(
     IBackgroundJobQueueResolver queueResolver,
     ILogger<WorkerBootstrapService> logger) : BackgroundService
 {
+    /// <summary>
+    /// Configures the recurring daily statistics job and completes immediately.
+    /// </summary>
     protected override Task ExecuteAsync(CancellationToken stoppingToken)
     {
         var cronExpression = configuration["Hangfire:RecurringJobs:DailyStatsCron"] ?? "59 23 * * *";

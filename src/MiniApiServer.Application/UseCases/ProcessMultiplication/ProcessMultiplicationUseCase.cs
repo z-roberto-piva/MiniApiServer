@@ -6,11 +6,17 @@ using MiniApiServer.Domain.Entities;
 
 namespace MiniApiServer.Application.UseCases.ProcessMultiplication;
 
+/// <summary>
+/// Executes the multiplication operation for a persisted input and stores the result.
+/// </summary>
 public sealed class ProcessMultiplicationUseCase(
     IDataInRepository dataInRepository,
     IDataMultiplicationRepository dataMultiplicationRepository,
     IDataInStatusCoordinator dataInStatusCoordinator)
 {
+    /// <summary>
+    /// Processes the input identified by the command and persists the multiplication result.
+    /// </summary>
     public async Task<ProcessMultiplicationResult> ExecuteAsync(ProcessMultiplicationCommand command, CancellationToken cancellationToken = default)
     {
         var dataIn = await dataInRepository.GetByIdAsync(command.DataInId, cancellationToken);

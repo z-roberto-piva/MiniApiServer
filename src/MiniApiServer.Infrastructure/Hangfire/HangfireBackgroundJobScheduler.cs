@@ -5,10 +5,14 @@ using System.Linq.Expressions;
 
 namespace MiniApiServer.Infrastructure.Hangfire;
 
+/// <summary>
+/// Hangfire-backed implementation of <see cref="IBackgroundJobScheduler"/>.
+/// </summary>
 public sealed class HangfireBackgroundJobScheduler(
     IBackgroundJobClient backgroundJobClient,
     IBackgroundJobQueueResolver queueResolver) : IBackgroundJobScheduler
 {
+    /// <inheritdoc />
     public Task EnqueueProcessDivisionAsync(
         Guid dataInId,
         BackgroundJobCategory category = BackgroundJobCategory.HighPriority,
@@ -18,6 +22,7 @@ public sealed class HangfireBackgroundJobScheduler(
         return Task.CompletedTask;
     }
 
+    /// <inheritdoc />
     public Task EnqueueProcessMultiplicationAsync(
         Guid dataInId,
         BackgroundJobCategory category = BackgroundJobCategory.HighPriority,
@@ -27,6 +32,7 @@ public sealed class HangfireBackgroundJobScheduler(
         return Task.CompletedTask;
     }
 
+    /// <inheritdoc />
     public Task EnqueueProcessSubtractionAsync(
         Guid dataInId,
         BackgroundJobCategory category = BackgroundJobCategory.HighPriority,
@@ -36,6 +42,7 @@ public sealed class HangfireBackgroundJobScheduler(
         return Task.CompletedTask;
     }
 
+    /// <inheritdoc />
     public Task EnqueueProcessSumAsync(
         Guid dataInId,
         BackgroundJobCategory category = BackgroundJobCategory.HighPriority,

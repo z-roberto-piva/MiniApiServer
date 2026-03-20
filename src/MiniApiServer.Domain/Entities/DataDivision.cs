@@ -2,6 +2,9 @@ using MiniApiServer.Domain.Common;
 
 namespace MiniApiServer.Domain.Entities;
 
+/// <summary>
+/// Stores the result of the division operation generated from a <see cref="DataIn"/> record.
+/// </summary>
 public sealed class DataDivision
 {
     private DataDivision()
@@ -17,14 +20,29 @@ public sealed class DataDivision
         Result = result;
     }
 
+    /// <summary>
+    /// Gets the identifier of the persisted result.
+    /// </summary>
     public Guid Id { get; private set; }
 
+    /// <summary>
+    /// Gets the source input identifier.
+    /// </summary>
     public Guid DataInId { get; private set; }
 
+    /// <summary>
+    /// Gets the copied description of the source input.
+    /// </summary>
     public string Description { get; private set; }
 
+    /// <summary>
+    /// Gets the computed division.
+    /// </summary>
     public int Result { get; private set; }
 
+    /// <summary>
+    /// Creates a new division result.
+    /// </summary>
     public static DataDivision Create(Guid dataInId, string description, int result)
     {
         if (dataInId == Guid.Empty)

@@ -4,8 +4,14 @@ using MiniApiServer.Domain.Entities;
 
 namespace MiniApiServer.Infrastructure.Persistence.Configurations;
 
+/// <summary>
+/// Maps <see cref="DataDivision"/> to the `data_divisions` table.
+/// </summary>
 public sealed class DataDivisionConfiguration : IEntityTypeConfiguration<DataDivision>
 {
+    /// <summary>
+    /// Configures the entity mapping.
+    /// </summary>
     public void Configure(EntityTypeBuilder<DataDivision> builder)
     {
         builder.ToTable("data_divisions");

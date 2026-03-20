@@ -5,8 +5,12 @@ using Npgsql;
 
 namespace MiniApiServer.Infrastructure.Persistence.Repositories;
 
+/// <summary>
+/// EF Core implementation of <see cref="IDataSubtractionRepository"/>.
+/// </summary>
 public sealed class DataSubtractionRepository(MiniApiServerDbContext dbContext) : IDataSubtractionRepository
 {
+    /// <inheritdoc />
     public async Task AddAsync(DataSubtraction dataSubtraction, CancellationToken cancellationToken = default)
     {
         try

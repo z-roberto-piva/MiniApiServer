@@ -22,8 +22,14 @@ using MiniApiServer.Infrastructure.Persistence.Services;
 
 namespace MiniApiServer.Infrastructure.DependencyInjection;
 
+/// <summary>
+/// Registers infrastructure services such as EF Core, Hangfire, repositories and use cases.
+/// </summary>
 public static class ServiceCollectionExtensions
 {
+    /// <summary>
+    /// Adds the shared infrastructure services used by both API and Worker hosts.
+    /// </summary>
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         var appConnectionString = configuration.GetConnectionString("AppPostgres")
@@ -115,6 +121,9 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
+    /// <summary>
+    /// Adds the Hangfire processing server configured for the worker host.
+    /// </summary>
     public static IServiceCollection AddHangfireWorker(this IServiceCollection services, IConfiguration configuration)
     {
         var queueSection = configuration.GetSection(HangfireQueueOptions.SectionName);

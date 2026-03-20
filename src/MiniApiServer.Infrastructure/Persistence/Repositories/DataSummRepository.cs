@@ -5,8 +5,12 @@ using Npgsql;
 
 namespace MiniApiServer.Infrastructure.Persistence.Repositories;
 
+/// <summary>
+/// EF Core implementation of <see cref="IDataSummRepository"/>.
+/// </summary>
 public sealed class DataSummRepository(MiniApiServerDbContext dbContext) : IDataSummRepository
 {
+    /// <inheritdoc />
     public async Task AddAsync(DataSumm dataSumm, CancellationToken cancellationToken = default)
     {
         try

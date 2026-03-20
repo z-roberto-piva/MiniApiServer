@@ -4,8 +4,14 @@ using MiniApiServer.Domain.Entities;
 
 namespace MiniApiServer.Infrastructure.Persistence.Configurations;
 
+/// <summary>
+/// Maps <see cref="DataMultiplication"/> to the `data_multiplications` table.
+/// </summary>
 public sealed class DataMultiplicationConfiguration : IEntityTypeConfiguration<DataMultiplication>
 {
+    /// <summary>
+    /// Configures the entity mapping.
+    /// </summary>
     public void Configure(EntityTypeBuilder<DataMultiplication> builder)
     {
         builder.ToTable("data_multiplications");
