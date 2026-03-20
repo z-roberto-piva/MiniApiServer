@@ -3,6 +3,7 @@ using Hangfire.PostgreSql;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using MiniApiServer.Application.Abstractions.Jobs;
 using MiniApiServer.Application.Abstractions.Queries;
 using MiniApiServer.Application.Abstractions.Services;
@@ -41,6 +42,20 @@ public static class ServiceCollectionExtensions
             .UseRecommendedSerializerSettings()
             .UsePostgreSqlStorage(storage => storage.UseNpgsqlConnection(hangfireConnectionString)));
 
+        var delaySection = configuration.GetSection(JobExecutionDelayOptions.SectionName);
+        var delayOptions = new JobExecutionDelayOptions
+        {
+            Enabled = bool.TryParse(delaySection["Enabled"], out var enabled) && enabled,
+            AllowedDurationsInSeconds = delaySection.GetSection("AllowedDurationsInSeconds")
+                .GetChildren()
+                .Select(section => int.TryParse(section.Value, out var seconds) ? seconds : (int?)null)
+                .Where(seconds => seconds.HasValue)
+                .Select(seconds => seconds!.Value)
+                .ToArray()
+        };
+
+        services.AddSingleton<IOptions<JobExecutionDelayOptions>>(Options.Create(delayOptions));
+
         services.AddScoped<IDataInRepository, DataInRepository>();
         services.AddScoped<IDataDivisionRepository, DataDivisionRepository>();
         services.AddScoped<IDataMultiplicationRepository, DataMultiplicationRepository>();
@@ -50,6 +65,9 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IDailyOperationsSummaryReader, DailyOperationsSummaryReader>();
         services.AddScoped<IDataInStatusCoordinator, DataInStatusCoordinator>();
         services.AddScoped<IBackgroundJobScheduler, HangfireBackgroundJobScheduler>();
+        services.AddSingleton<IRandomDelaySelector, RandomDelaySelector>();
+        services.AddSingleton<IJobDelayAwaiter, TaskDelayAwaiter>();
+        services.AddSingleton<IJobExecutionDelaySimulator, JobExecutionDelaySimulator>();
 
         services.AddScoped<CreateInputDataUseCase>();
         services.AddScoped<ProcessDivisionUseCase>();

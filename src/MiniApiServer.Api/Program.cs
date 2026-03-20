@@ -1,3 +1,4 @@
+using Hangfire;
 using Serilog;
 using MiniApiServer.Infrastructure.DependencyInjection;
 using Microsoft.OpenApi.Models;
@@ -36,6 +37,8 @@ if (app.Environment.IsDevelopment())
         options.SwaggerEndpoint("/swagger/v1/swagger.json", "MiniApiServer.Api v1");
         options.RoutePrefix = "swagger";
     });
+
+    app.UseHangfireDashboard("/hangfire");
 }
 
 app.UseAuthorization();
