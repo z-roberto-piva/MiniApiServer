@@ -5,7 +5,8 @@
 Questa applicazione serve per sperimentare **Hangfire** prima dell’integrazione della libreria nel progetto **ZMenuNext**.
 
 Il sistema deve:
-- usare **PostgreSQL** come persistenza applicativa e per Hangfire;
+- usare **PostgreSQL** come persistenza applicativa;
+- usare un database **PostgreSQL dedicato** per lo storage di **Hangfire**, separato dal database applicativo;
 - esporre una **Web API** per ricevere richieste di input;
 - salvare i dati ricevuti nella tabella `data_in`;
 - generare due job distinti, uno per la **somma** e uno per la **sottrazione**;
@@ -55,6 +56,12 @@ La soluzione deve essere organizzata in layer chiaramente separati, ad esempio:
 
 ### 3. Persistenza
 Usare **PostgreSQL**.
+
+Il progetto deve distinguere chiaramente:
+- **database applicativo** per le tabelle di dominio;
+- **database Hangfire** dedicato esclusivamente allo storage dei job e delle tabelle interne di Hangfire.
+
+Le due persistenze devono essere configurate con **connection string separate**.
 
 Tabelle richieste:
 
@@ -137,7 +144,7 @@ Definire casi d’uso espliciti, ad esempio:
 Ogni use case deve avere una responsabilità chiara e testabile.
 
 ### Hangfire
-- Configurare Hangfire su PostgreSQL.
+- Configurare Hangfire su PostgreSQL usando un database dedicato, separato da quello applicativo.
 - Distinguere chiaramente:
   - **job enqueue** lato API / Application;
   - **job execution** lato Worker.
