@@ -15,7 +15,7 @@ builder.Services.AddSerilog((services, loggerConfiguration) => loggerConfigurati
     .ReadFrom.Services(services));
 
 builder.Services.AddInfrastructure(builder.Configuration);
-builder.Services.AddHangfireWorker();
+builder.Services.AddHangfireWorker(builder.Configuration);
 builder.Services.AddHostedService<WorkerBootstrapService>();
 
 await builder.Build().RunAsync();
