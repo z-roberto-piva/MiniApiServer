@@ -11,6 +11,10 @@ Realizzare una soluzione dimostrativa per sperimentare Hangfire con PostgreSQL, 
 - Userò un database `PostgreSQL` per i dati applicativi e un database `PostgreSQL` separato per lo storage di Hangfire.
 - Considero `data_a`, `data_b` e `result` come numeri interi, salvo diversa indicazione.
 - Il campo `date` di `stats` rappresenterà il giorno di competenza del riepilogo.
+- `n_of_operations` rappresenterà il numero di record presenti in `data_in` per la giornata di competenza.
+- I totali statistici rappresenteranno il numero di operazioni concluse per tipo, non la somma aritmetica dei risultati.
+- Il riepilogo giornaliero ragionerà in `UTC`.
+- Il database Hangfire resterà separato da quello applicativo, come già implementato.
 
 ## Struttura proposta della solution
 
@@ -214,6 +218,46 @@ tests/
 
 - Possibilità di simulare latenze variabili nei job per testare in modo più realistico concorrenza e aggiornamento degli stati.
 
+## Fase 7.6: categorizzazione e priorità dei job Hangfire
+
+### Attività
+
+- Introdurre un sistema per categorizzare i job Hangfire in gruppi logici coerenti con il dominio o con esigenze operative.
+- Mappare le categorie su meccanismi di esecuzione Hangfire compatibili con la gestione della priorità, ad esempio code dedicate.
+- Estendere l'astrazione applicativa di scheduling per permettere l'enqueue dei job con categoria esplicita.
+- Configurare il worker per consumare le code in un ordine che rifletta la priorità desiderata.
+- Definire una strategia minima di priorità, ad esempio distinguendo tra:
+  - job ad alta priorità;
+  - job standard;
+  - job differibili o a priorità bassa.
+- Valutare se associare categorie e priorità in modo statico per tipo di job oppure tramite configurazione.
+- Verificare che la categorizzazione non introduca logica di business nei job wrapper e resti confinata a livello infrastrutturale.
+
+### Deliverable
+
+- Sistema di categorizzazione dei job Hangfire con priorità di esecuzione governata dalla categoria.
+
+## Fase 7.7: adeguamento della tabella stats e del riepilogo giornaliero
+
+### Attività
+
+- Estendere la tabella `stats` per rappresentare il conteggio delle operazioni concluse per tutti i tipi supportati:
+  - `sum`
+  - `subtraction`
+  - `multiplication`
+  - `division`
+- Aggiornare il modello di dominio, i mapping EF Core e le migration per includere i nuovi campi statistici.
+- Adeguare il job giornaliero di riepilogo affinché:
+  - usi `UTC` per il perimetro della giornata;
+  - calcoli `n_of_operations` come numero di record in `data_in`;
+  - calcoli i totali come conteggio delle operazioni concluse per categoria.
+- Aggiornare query, DTO e test relativi alla generazione delle statistiche giornaliere.
+- Verificare che il riepilogo resti coerente con la presenza di più job per singolo record sorgente.
+
+### Deliverable
+
+- Tabella `stats` e job giornaliero coerenti con il nuovo perimetro funzionale dell'applicazione.
+
 ## Fase 8: test
 
 ### Attività
@@ -264,8 +308,10 @@ tests/
 8. Rafforzamento del coordinatore di stato.
 9. Nuovi job di multiplication e division.
 10. Introduzione di uno sleep random controllato nei job.
-11. Test unitari e di integrazione.
-12. Verifica end-to-end locale.
+11. Categorizzazione dei job Hangfire e gestione della priorità.
+12. Adeguamento della tabella `stats` e del riepilogo giornaliero.
+13. Test unitari e di integrazione.
+14. Verifica end-to-end locale.
 
 ## Dettagli implementativi che intendo seguire
 
@@ -276,18 +322,17 @@ tests/
 - Il coordinatore di stato verrà irrobustito per reggere esecuzioni concorrenti di più worker.
 - L'aggiunta di nuovi job dovrà mantenere coerenza architetturale ed estendere il coordinamento dello stato senza duplicare logica.
 - L'introduzione dello sleep random dovrà restare confinata a un meccanismo tecnico configurabile, così da non contaminare la logica di business.
+- La categorizzazione e la priorità dei job dovranno sfruttare le primitive native di Hangfire senza introdurre accoppiamento diretto del dominio alle code tecniche.
 - Il job giornaliero leggerà i risultati prodotti nella giornata e scriverà un record di riepilogo in `stats`.
+- Il modello di `stats` andrà esteso per includere anche il conteggio di `multiplication` e `division`, coerentemente con l'evoluzione del flusso.
 - I nomi tabellari richiesti verranno preservati anche se non idiomatici.
 
 ## Rischi o decisioni da confermare durante l'implementazione
 
-- Se `n_of_operations` debba rappresentare il numero di record in `data_in` creati nel giorno o il numero totale di job eseguiti.
-- Se `total_of_sums` e `total_of_subtractions` debbano essere somme aritmetiche dei risultati o conteggi delle operazioni concluse.
 - Se serva aggiungere una chiave primaria esplicita a tutte le tabelle, anche se nelle specifiche non è stata elencata.
-- Se il riepilogo giornaliero debba usare il fuso orario locale o UTC per determinare il perimetro della giornata.
-- Se il database Hangfire debba stare sullo stesso server PostgreSQL del database applicativo o su un server separato.
-- Quale strategia di concorrenza sia preferibile per il coordinatore: lock su riga, unique constraint, retry applicativo o combinazione di queste.
+- Confermare l'estensione della tabella `stats` con i campi per numero di `multiplication` e numero di `division`.
 - Se i nuovi risultati di `multiplication` e `division` debbano avere tabelle dedicate analoghe a somma e sottrazione oppure una modellazione più generica.
+- Definire una tassonomia di categorie e priorità semplice e didattica, senza vincoli di riuso diretto verso ZMenuNext.
 
 ## Output atteso a fine implementazione
 
