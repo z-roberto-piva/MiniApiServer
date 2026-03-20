@@ -56,6 +56,34 @@ public static class ServiceCollectionExtensions
 
         services.AddSingleton<IOptions<JobExecutionDelayOptions>>(Options.Create(delayOptions));
 
+        var queueSection = configuration.GetSection(HangfireQueueOptions.SectionName);
+        var queueOptions = new HangfireQueueOptions
+        {
+            WorkerQueues = queueSection.GetSection("WorkerQueues")
+                .GetChildren()
+                .Select(section => section.Value)
+                .Where(value => !string.IsNullOrWhiteSpace(value))
+                .Cast<string>()
+                .ToArray(),
+            HighPriority = queueSection["HighPriority"] ?? "high",
+            StandardPriority = queueSection["StandardPriority"] ?? "standard",
+            LowPriority = queueSection["LowPriority"] ?? "low"
+        };
+
+        services.AddSingleton<IOptions<HangfireQueueOptions>>(Options.Create(queueOptions));
+
+        var categorySection = configuration.GetSection(HangfireJobCategoryOptions.SectionName);
+        var categoryOptions = new HangfireJobCategoryOptions
+        {
+            ProcessSum = categorySection["ProcessSum"] ?? nameof(Application.Abstractions.Jobs.BackgroundJobCategory.HighPriority),
+            ProcessSubtraction = categorySection["ProcessSubtraction"] ?? nameof(Application.Abstractions.Jobs.BackgroundJobCategory.HighPriority),
+            ProcessMultiplication = categorySection["ProcessMultiplication"] ?? nameof(Application.Abstractions.Jobs.BackgroundJobCategory.HighPriority),
+            ProcessDivision = categorySection["ProcessDivision"] ?? nameof(Application.Abstractions.Jobs.BackgroundJobCategory.HighPriority),
+            GenerateDailyStats = categorySection["GenerateDailyStats"] ?? nameof(Application.Abstractions.Jobs.BackgroundJobCategory.LowPriority)
+        };
+
+        services.AddSingleton<IOptions<HangfireJobCategoryOptions>>(Options.Create(categoryOptions));
+
         services.AddScoped<IDataInRepository, DataInRepository>();
         services.AddScoped<IDataDivisionRepository, DataDivisionRepository>();
         services.AddScoped<IDataMultiplicationRepository, DataMultiplicationRepository>();
@@ -64,7 +92,9 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IStatRepository, StatRepository>();
         services.AddScoped<IDailyOperationsSummaryReader, DailyOperationsSummaryReader>();
         services.AddScoped<IDataInStatusCoordinator, DataInStatusCoordinator>();
+        services.AddSingleton<IBackgroundJobCategoryResolver, ConfiguredBackgroundJobCategoryResolver>();
         services.AddScoped<IBackgroundJobScheduler, HangfireBackgroundJobScheduler>();
+        services.AddSingleton<IBackgroundJobQueueResolver, BackgroundJobQueueResolver>();
         services.AddSingleton<IRandomDelaySelector, RandomDelaySelector>();
         services.AddSingleton<IJobDelayAwaiter, TaskDelayAwaiter>();
         services.AddSingleton<IJobExecutionDelaySimulator, JobExecutionDelaySimulator>();
@@ -85,9 +115,20 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    public static IServiceCollection AddHangfireWorker(this IServiceCollection services)
+    public static IServiceCollection AddHangfireWorker(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddHangfireServer();
+        var queueSection = configuration.GetSection(HangfireQueueOptions.SectionName);
+        var workerQueues = queueSection.GetSection("WorkerQueues")
+            .GetChildren()
+            .Select(section => section.Value)
+            .Where(value => !string.IsNullOrWhiteSpace(value))
+            .Cast<string>()
+            .ToArray();
+
+        services.AddHangfireServer(options =>
+        {
+            options.Queues = workerQueues.Length > 0 ? workerQueues : ["high", "standard", "low"];
+        });
         return services;
     }
 }
