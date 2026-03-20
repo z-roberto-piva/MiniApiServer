@@ -4,8 +4,14 @@ using MiniApiServer.Domain.Entities;
 
 namespace MiniApiServer.Infrastructure.Persistence.Configurations;
 
+/// <summary>
+/// Maps <see cref="DataSubtraction"/> to the `data_subtractions` table.
+/// </summary>
 public sealed class DataSubtractionConfiguration : IEntityTypeConfiguration<DataSubtraction>
 {
+    /// <summary>
+    /// Configures the entity mapping.
+    /// </summary>
     public void Configure(EntityTypeBuilder<DataSubtraction> builder)
     {
         builder.ToTable("data_subtractions");

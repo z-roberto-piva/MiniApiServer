@@ -3,8 +3,12 @@ using MiniApiServer.Application.Abstractions.Jobs;
 
 namespace MiniApiServer.Infrastructure.Hangfire;
 
+/// <summary>
+/// Resolves job categories from configuration values.
+/// </summary>
 public sealed class ConfiguredBackgroundJobCategoryResolver(IOptions<HangfireJobCategoryOptions> options) : IBackgroundJobCategoryResolver
 {
+    /// <inheritdoc />
     public BackgroundJobCategory ResolveCategory(BackgroundJobType jobType)
     {
         var configuredValue = jobType switch

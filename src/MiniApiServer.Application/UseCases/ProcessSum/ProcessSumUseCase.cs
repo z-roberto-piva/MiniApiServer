@@ -6,11 +6,17 @@ using MiniApiServer.Domain.Entities;
 
 namespace MiniApiServer.Application.UseCases.ProcessSum;
 
+/// <summary>
+/// Executes the sum operation for a persisted input and stores the result.
+/// </summary>
 public sealed class ProcessSumUseCase(
     IDataInRepository dataInRepository,
     IDataSummRepository dataSummRepository,
     IDataInStatusCoordinator dataInStatusCoordinator)
 {
+    /// <summary>
+    /// Processes the input identified by the command and persists the sum result.
+    /// </summary>
     public async Task<ProcessSumResult> ExecuteAsync(ProcessSumCommand command, CancellationToken cancellationToken = default)
     {
         var dataIn = await dataInRepository.GetByIdAsync(command.DataInId, cancellationToken);

@@ -3,12 +3,16 @@ using Microsoft.Extensions.Options;
 
 namespace MiniApiServer.Infrastructure.Hangfire;
 
+/// <summary>
+/// Applies a configured random delay before background job execution to simulate long-running work.
+/// </summary>
 public sealed class JobExecutionDelaySimulator(
     IOptions<JobExecutionDelayOptions> options,
     IRandomDelaySelector randomDelaySelector,
     IJobDelayAwaiter jobDelayAwaiter,
     ILogger<JobExecutionDelaySimulator> logger) : IJobExecutionDelaySimulator
 {
+    /// <inheritdoc />
     public async Task DelayAsync(string jobName, Guid dataInId, CancellationToken cancellationToken = default)
     {
         var configuredDurations = options.Value.AllowedDurationsInSeconds;

@@ -3,8 +3,12 @@ using MiniApiServer.Application.Abstractions.Jobs;
 
 namespace MiniApiServer.Infrastructure.Hangfire;
 
+/// <summary>
+/// Resolves Hangfire queue names from configured application job categories.
+/// </summary>
 public sealed class BackgroundJobQueueResolver(IOptions<HangfireQueueOptions> options) : IBackgroundJobQueueResolver
 {
+    /// <inheritdoc />
     public string ResolveQueue(BackgroundJobCategory category)
         => category switch
         {
@@ -14,6 +18,7 @@ public sealed class BackgroundJobQueueResolver(IOptions<HangfireQueueOptions> op
             _ => options.Value.StandardPriority
         };
 
+    /// <inheritdoc />
     public string[] GetWorkerQueuesInPriorityOrder()
         => options.Value.WorkerQueues.Length > 0
             ? options.Value.WorkerQueues

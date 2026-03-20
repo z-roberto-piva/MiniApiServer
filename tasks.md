@@ -296,6 +296,17 @@ tests/
 
 - Soluzione eseguibile in locale con setup chiaro.
 
+### Nota sulla schedulazione del job `stats`
+
+- La schedulazione del recurring job delle statistiche è controllata da `Hangfire:RecurringJobs:DailyStatsCron` nel file [appsettings.json](/Users/pivrob/Sviluppo/esperimenti/MiniApiServer/src/MiniApiServer.Worker/appsettings.json).
+- La cron expression viene interpretata in `UTC`.
+- Esempi utili:
+  - `59 23 * * *` per eseguire ogni giorno alle `23:59 UTC`
+  - `5 0 * * *` per eseguire ogni giorno alle `00:05 UTC`
+  - `0 * * * *` per eseguire ogni ora al minuto `0`
+  - `*/5 * * * *` per eseguire ogni `5` minuti durante i test
+- Dopo la modifica della cron expression è necessario riavviare il worker per aggiornare la registrazione del recurring job.
+
 ## Sequenza di implementazione consigliata
 
 1. Riorganizzazione solution e progetti.

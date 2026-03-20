@@ -5,8 +5,12 @@ using Npgsql;
 
 namespace MiniApiServer.Infrastructure.Persistence.Repositories;
 
+/// <summary>
+/// EF Core implementation of <see cref="IDataDivisionRepository"/>.
+/// </summary>
 public sealed class DataDivisionRepository(MiniApiServerDbContext dbContext) : IDataDivisionRepository
 {
+    /// <inheritdoc />
     public async Task AddAsync(DataDivision dataDivision, CancellationToken cancellationToken = default)
     {
         try

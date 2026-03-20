@@ -6,11 +6,17 @@ using MiniApiServer.Domain.Entities;
 
 namespace MiniApiServer.Application.UseCases.ProcessSubtraction;
 
+/// <summary>
+/// Executes the subtraction operation for a persisted input and stores the result.
+/// </summary>
 public sealed class ProcessSubtractionUseCase(
     IDataInRepository dataInRepository,
     IDataSubtractionRepository dataSubtractionRepository,
     IDataInStatusCoordinator dataInStatusCoordinator)
 {
+    /// <summary>
+    /// Processes the input identified by the command and persists the subtraction result.
+    /// </summary>
     public async Task<ProcessSubtractionResult> ExecuteAsync(ProcessSubtractionCommand command, CancellationToken cancellationToken = default)
     {
         var dataIn = await dataInRepository.GetByIdAsync(command.DataInId, cancellationToken);

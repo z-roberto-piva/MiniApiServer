@@ -4,8 +4,14 @@ using MiniApiServer.Domain.Entities;
 
 namespace MiniApiServer.Infrastructure.Persistence.Configurations;
 
+/// <summary>
+/// Maps <see cref="DataSumm"/> to the `data_summs` table.
+/// </summary>
 public sealed class DataSummConfiguration : IEntityTypeConfiguration<DataSumm>
 {
+    /// <summary>
+    /// Configures the entity mapping.
+    /// </summary>
     public void Configure(EntityTypeBuilder<DataSumm> builder)
     {
         builder.ToTable("data_summs");
